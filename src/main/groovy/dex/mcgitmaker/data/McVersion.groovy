@@ -5,10 +5,11 @@ import dex.mcgitmaker.Util
 import dex.mcgitmaker.loom.BundleMetadata
 import dex.mcgitmaker.loom.Decompiler
 import dex.mcgitmaker.loom.Remapper
+import net.fabricmc.mappingio.MappingWriter
 import net.fabricmc.mappingio.adapter.MappingSourceNsSwitch
 import net.fabricmc.mappingio.format.MappingFormat
-import net.fabricmc.mappingio.format.ProGuardReader
-import net.fabricmc.mappingio.format.Tiny2Writer
+import net.fabricmc.mappingio.format.proguard.ProGuardFileReader
+import net.fabricmc.mappingio.format.tiny.Tiny2FileWriter
 import net.fabricmc.mappingio.tree.MemoryMappingTree
 import net.fabricmc.stitch.merge.JarMerger
 import net.fabricmc.tinyremapper.IMappingProvider
@@ -71,13 +72,14 @@ class McVersion {
 
             try (BufferedReader clientBufferedReader = Files.newBufferedReader(artifacts.clientMappings.fetchArtifact().toPath(), StandardCharsets.UTF_8)
                  BufferedReader serverBufferedReader = Files.newBufferedReader(artifacts.serverMappings.fetchArtifact().toPath(), StandardCharsets.UTF_8)) {
-                ProGuardReader.read(clientBufferedReader as Reader, Util.MappingsNamespace.MOJMAP.toString(), Util.MappingsNamespace.OFFICIAL.toString(), nsSwitch)
-                ProGuardReader.read(serverBufferedReader as Reader, Util.MappingsNamespace.MOJMAP.toString(), Util.MappingsNamespace.OFFICIAL.toString(), nsSwitch)
+                ProGuardFileReader.read(clientBufferedReader as Reader, Util.MappingsNamespace.MOJMAP.toString(), Util.MappingsNamespace.OFFICIAL.toString(), nsSwitch)
+                ProGuardFileReader.read(serverBufferedReader as Reader, Util.MappingsNamespace.MOJMAP.toString(), Util.MappingsNamespace.OFFICIAL.toString(), nsSwitch)
             }
 
-            def w = Tiny2Writer.create(mappingsFile, MappingFormat.TINY_2)
-            mappingTree.accept(w)
-            w.close()
+            try (MappingWriter w = MappingWriter.create(mappingsFile, MappingFormat.TINY_2_FILE)) {
+                mappingTree.accept(w)
+                w.close()
+            }
         }
 
         return mappingsFile

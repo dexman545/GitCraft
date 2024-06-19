@@ -16,7 +16,7 @@ repositories {
 
 tasks.withType(JavaCompile).configureEach {
     it.options.encoding = "UTF-8"
-    it.options.release = 8
+    it.options.release = 21
 }
 
 application {
@@ -51,5 +51,5 @@ dependencies {
     implementation "org.eclipse.jgit:org.eclipse.jgit:${jgit_version}"
 
     // Decompiler, could be replaced with another fernflower fork
-    implementation "org.quiltmc:quiltflower:${quiltflower_version}"
+    implementation "org.vineflower:vineflower:${vineflower_version}"
 }
