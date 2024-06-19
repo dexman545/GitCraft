@@ -5,7 +5,6 @@ import dex.mcgitmaker.data.Artifact
 import dex.mcgitmaker.data.McVersion
 import groovy.json.JsonGenerator
 import groovy.json.JsonOutput
-import net.fabricmc.stitch.util.StitchUtil
 import org.jetbrains.java.decompiler.main.Fernflower
 import org.jetbrains.java.decompiler.main.decompiler.DirectoryResultSaver
 import org.jetbrains.java.decompiler.main.decompiler.PrintStreamLogger
@@ -35,12 +34,12 @@ class Decompiler {
         options.put(IFernflowerPreferences.THREADS, Integer.toString(Runtime.getRuntime().availableProcessors() - 3));
         //options.put(IFabricJavadocProvider.PROPERTY_NAME, new QfTinyJavadocProvider(metaData.javaDocs().toFile()));
 
-        // Experimental QF preferences
+        // Experimental VF preferences
         options.put(IFernflowerPreferences.PATTERN_MATCHING, "1");
-        options.put(IFernflowerPreferences.EXPERIMENTAL_TRY_LOOP_FIX, "1");
+        options.put(IFernflowerPreferences.TRY_LOOP_FIX, "1");
         //options.putAll(ReflectionUtil.<Map<String, String>>maybeGetFieldOrRecordComponent(metaData, "options").orElse(Map.of()));
 
-        Fernflower ff = new Fernflower(Zips::getBytes, new DirectoryResultSaver(decompiledPath(mcVersion).toFile()), options, new PrintStreamLogger(/*System.out*/NULL_IS))
+        Fernflower ff = new Fernflower(new DirectoryResultSaver(decompiledPath(mcVersion).toFile()), options, new PrintStreamLogger(/*System.out*/NULL_IS))
 
         println 'Adding libraries...'
         for (Artifact library : mcVersion.libraries) {
@@ -71,18 +70,5 @@ class Decompiler {
         def x = p.toFile()
         x.createNewFile()
         x.write(JsonOutput.prettyPrint(generator.toJson(c)))
-    }
-
-    // Adapted from loom-quiltflower by Juuxel
-    static final class Zips {
-        static byte[] getBytes(String outerPath, String innerPath) throws IOException {
-            if (innerPath == null) {
-                return Files.readAllBytes(Path.of(outerPath));
-            }
-
-            try (StitchUtil.FileSystemDelegate fs = StitchUtil.getJarFileSystem(new File(outerPath), false)) {
-                return Files.readAllBytes(fs.get().getPath(innerPath));
-            }
-        }
     }
 }
