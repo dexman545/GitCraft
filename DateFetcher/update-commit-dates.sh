@@ -15,15 +15,18 @@ cd $SCRIPT_DIR
 
 # Build DateFetcher
 if [ ! -f $DateFetcher ]; then
-    echo "DateFetcher must be built first!"
-    sh ./gradlew build
+    echo "DateFetcher must be built first.."
+    if ( ! sh ./gradlew build ); then
+        echo "Could not build DateFetcher!"
+        exit 2
+    fi
 fi
 
 # Validate repository
 if [ ! -d "$TARGET_DIR/.git" ]; then
     echo "No git repository found in $TARGET_DIR!"
     ls $TARGET_DIR | echo
-    exit 2
+    exit 3
 fi
 
 read -p "You are about to perform the modifications in $TARGET_DIR. Are you sure? (y/n)" -n 1 -r
