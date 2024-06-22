@@ -51,6 +51,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
         releaseTime = subprocess.run(['java', '-jar', '$SCRIPT_DIR/$DateFetcher', mcVersion, 'epoch'], capture_output=True, text=True).stdout.strip()
         new_dt = getDatetime(releaseTime)
         commit.author_date = (releaseTime).encode()
+        commit.committer_date = (releaseTime).encode()
         print('To: ' + new_dt.isoformat())
     "
 fi
