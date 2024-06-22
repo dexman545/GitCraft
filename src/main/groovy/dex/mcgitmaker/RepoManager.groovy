@@ -1,16 +1,22 @@
 package dex.mcgitmaker
 
+import de.metroite.datefetcher.DateFetcher
 import dex.mcgitmaker.data.McVersion
+import org.eclipse.jgit.api.CommitCommand
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.ResetCommand
 import org.eclipse.jgit.lib.Constants
+import org.eclipse.jgit.lib.PersonIdent
 import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.revwalk.RevWalk
 import org.eclipse.jgit.revwalk.filter.RevFilter
+import org.eclipse.jgit.util.SystemReader
+import org.eclipse.jgit.util.time.MonotonicSystemClock
 
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
+import java.time.ZonedDateTime
 import java.util.stream.Stream
 
 class RepoManager {
@@ -54,7 +60,12 @@ class RepoManager {
 
         // Make commit
         git.add().addFilepattern(".").call()
-        git.commit().setAll(true).setMessage(msg).setAuthor("Mojang", "gitcraft@decompiled.mc").call()
+
+        // Use DateFetcher to find release date
+        ZonedDateTime releaseDate = DateFetcher.getReleaseDate(mcVersion.version)
+        PersonIdent author = new PersonIdent("Mojang", "gitcraft@decompiled.mc", Date.from(releaseDate.toInstant()), TimeZone.getTimeZone(releaseDate.getZone()))
+
+        git.commit().setAll(true).setMessage(msg).setAuthor(author).call()
 
         println 'Commited ' + mcVersion.version + ' to the repository!'
     }
