@@ -11,7 +11,8 @@ class GitCraft {
     public static final def MAIN_ARTIFACT_STORE = Paths.get(new File('.').canonicalPath).resolve('artifact-store')
     public static final def DECOMPILED_WORKINGS = MAIN_ARTIFACT_STORE.resolve('decompiled')
     public static final def MAPPINGS = MAIN_ARTIFACT_STORE.resolve('mappings')
-    public static final def REPO = MAIN_ARTIFACT_STORE.parent.resolve('minecaft-repo')
+    public static final def REPO_OLD = MAIN_ARTIFACT_STORE.parent.resolve('minecaft-repo')
+    public static final def REPO = MAIN_ARTIFACT_STORE.parent.resolve('minecraft-repo')
     public static final def MC_VERSION_STORE = MAIN_ARTIFACT_STORE.resolve('mc-versions')
     public static final def LIBRARY_STORE = MAIN_ARTIFACT_STORE.resolve('libraries')
     public static final def METADATA_STORE = MAIN_ARTIFACT_STORE.resolve('metadata.json')
@@ -37,6 +38,11 @@ class GitCraft {
     }
 
     static void main(String[] args) {
+        if (REPO_OLD.toFile().isDirectory()) {
+            println 'It looks like you have a misspelled repo file at: ' + REPO_OLD.toString()
+            println 'Please rename that folder so that it matches: ' + REPO.toString()
+            System.exit(1)
+        }
         def gitCraft = new GitCraft()
         gitCraft.updateRepo()
 

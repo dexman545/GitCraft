@@ -8,9 +8,6 @@ repositories {
         name = 'Fabric'
         url = 'https://maven.fabricmc.net/'
     }
-    maven {
-        url = "https://maven.quiltmc.org/repository/release"
-    }
     mavenCentral()
 }
 
@@ -52,4 +49,17 @@ dependencies {
 
     // Decompiler, could be replaced with another fernflower fork
     implementation "org.vineflower:vineflower:${vineflower_version}"
+
+    implementation project(":DateFetcher")
+}
+
+// Disable running DateFetcher for no reason
+subprojects {
+    afterEvaluate { subproject ->
+        if (subproject.name == 'DateFetcher') {
+            tasks.named("run").configure { task ->
+                task.enabled = false
+            }
+        }
+    }
 }

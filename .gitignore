@@ -1,6 +1,6 @@
 # GitCraft
 artifact-store/
-minecaft-repo/
+minecraft-repo/
 
 # Gradle
 .gradle/
@@ -33,3 +33,6 @@ hs_err_*.log
 replay_*.log
 *.hprof
 *.jfr
+
+# DataFetcher
+version_manifest.json
